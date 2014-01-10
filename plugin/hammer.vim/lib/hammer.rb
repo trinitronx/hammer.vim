@@ -108,7 +108,12 @@ module Hammer
       has_tohtml = if Vim.evaluate('!&cp && exists(":TOhtml") && has("user_commands")') == 1 then true else nil end
       cleanup = nil
 
-      unless GitHub::Markup.can_render?(buffer.basename) || has_tohtml
+      if ! GitHub::Markup.can_render?('README.md')
+          GitHub::Markup.render(buffer.basename, buffer[1..-1])
+          Vim.message("There is a problem with the github-markup gem")
+      end
+      Vim.message("renderer_name: #{GitHub::Markup.renderer_name('README.md')}")
+      unless GitHub::Markup.can_render?(buffer.basename) #|| has_tohtml
         msg = "Cannot render '#{buffer.extname}' files. Missing renderer?"
         Vim.message(msg)
         return nil
